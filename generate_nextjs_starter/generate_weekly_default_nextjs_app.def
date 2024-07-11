@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: node:14-slim
+
+%files
+    package.json
+    generateWeeklyDefaultNextjsApp.ts /app/generateWeeklyDefaultNextjsApp.ts
+    execute_daily_persist.sh /app/execute_daily_persist.sh
+
+%post
+    apt-get update && apt-get install -y git
+    npm install -D typescript
+    cd /app
+    tsc generateWeeklyDefaultNextjsApp.ts
+
+%environment
+    export REPO_DIR=/repo
+
+%runscript
+    cd $REPO_DIR
+    bash /app/execute_daily_persist.sh
+
+%startscript
+    cd $REPO_DIR
+    while true; do
+        bash /app/execute_daily_persist.sh
+        sleep 86400  # Sleep for 1 day
+    done

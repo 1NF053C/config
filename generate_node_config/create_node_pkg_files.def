@@ -1,0 +1,43 @@
+Bootstrap: docker
+From: node:18-alpine
+
+%post
+    # Install necessary packages
+    #apk add --no-cache jq
+
+    # Create a working directory
+    mkdir -p /workspace
+    mkdir -p /output
+
+%runscript
+    cd /workspace
+
+    # handle package.json
+    npm init -y || (echo "Failed to initialize npm project" && exit 1)
+    npm install --save-dev typescript @types/node || (echo "Failed to install dev dependencies" && exit 1)
+
+    # handle tsconfig.json
+    npx tsc --init || (echo "Failed to initialize TypeScript config" && exit 1)
+    # Modify the tsconfig.json as needed
+    #jq '.compilerOptions.target = "ES6" | .compilerOptions.module = "commonjs"' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json
+
+    # clean up npm cache to reduce image size
+    npm cache clean --force
+
+    # Verify the content of tsconfig.json
+    cat tsconfig.json
+
+    # Copy the generated files to the host workspace directory
+    cp /workspace/package.json /output
+    cp /workspace/tsconfig.json /output
+    
+    echo "package.json and tsconfig.json have been copied to the host output directory."
+
+%labels
+    Author YourName
+    Version 1.0
+    Description "Container for generating Node.js project files without cluttering the host system."
+
+%test
+    # Test to ensure the container is working correctly
+    test -d /workspace && test -d /output
