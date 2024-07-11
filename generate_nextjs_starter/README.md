@@ -1,0 +1,1 @@
+TODO, remove persistant execution logic, keep it as simple script
