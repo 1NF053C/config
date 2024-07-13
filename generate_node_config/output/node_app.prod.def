@@ -1,0 +1,30 @@
+Bootstrap: docker
+From: node:18-alpine
+
+%post
+    mkdir -p /app
+    cd /app
+    cp package.json /app
+    cp .gitignore /app
+    cp tsconfig.json /app
+
+    # install dependencies
+    npm install || (echo "Failed to install dependencies" && exit 1)
+
+    # clean up npm cache to reduce image size
+    npm cache clean --force
+
+    echo "npm dependencies have been installed and npm cache cleaned"
+
+%runscript
+    npm run dev
+
+%labels
+    Author 1nf053c
+    Version 1.0
+    Description "Container for generating Node.js project files without cluttering the host system."
+
+%test
+    # Test to ensure the container is working correctly
+    test -d /node_modules
+
