@@ -45,7 +45,8 @@ From: node:18-alpine
     cp /host_project_root/include/node_app.dev.def /host_project_root/output
     cp /host_project_root/include/node_app.prod.def /host_project_root/output
     cp /host_project_root/include/index.ts /host_project_root/output
-    
+    cp /host_project_root/include/README.md /host_project_root/output
+
     echo "Modify package.json"
     cd /host_project_root/output
     jq '.scripts.build = "tsc --outDir=.dist"' package.json > package.tmp.json && mv package.tmp.json package.json
