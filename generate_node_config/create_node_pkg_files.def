@@ -28,7 +28,6 @@ From: node:18-alpine
     ls /app;
 
 %environment
-    # Container uses node_modules/.bin/tsc and we don't need to clutter host with it
     export PATH="/app/node_modules/.bin:$PATH"
 
 %runscript
