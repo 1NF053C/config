@@ -1,1 +1,1 @@
-apptainer run --writable-tmpfs --contain --bind ./output:/output create_node_pkg_files.sif
+apptainer run --writable-tmpfs --contain --bind ./:/host_project_root create_node_pkg_files.sif

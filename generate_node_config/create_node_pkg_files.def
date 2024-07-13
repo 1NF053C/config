@@ -1,43 +1,72 @@
 Bootstrap: docker
 From: node:18-alpine
 
+# generates default files in host's /output dir
+
 %post
-    # Install necessary packages
-    #apk add --no-cache jq
+    # Install system packages
+    apk add --no-cache jq
 
-    # Create a working directory
-    mkdir -p /workspace
-    mkdir -p /output
+    # Create container directories
+    mkdir -p /app
+    mkdir -p /host_project_root/output # expects "--bind ./:/host_project_root/output" apptainer run flag
 
-%runscript
-    cd /workspace
+    # Change to container app dir
+    cd /app
 
-    # handle package.json
+    # Create package.json
     npm init -y || (echo "Failed to initialize npm project" && exit 1)
     npm install --save-dev typescript @types/node || (echo "Failed to install dev dependencies" && exit 1)
 
-    # handle tsconfig.json
+    # Create tsconfig.json
     npx tsc --init || (echo "Failed to initialize TypeScript config" && exit 1)
-    # Modify the tsconfig.json as needed
-    #jq '.compilerOptions.target = "ES6" | .compilerOptions.module = "commonjs"' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json
 
-    # clean up npm cache to reduce image size
+    # Clean up npm cache to reduce image size
     npm cache clean --force
 
-    # Verify the content of tsconfig.json
-    cat tsconfig.json
+    echo "ls app";
+    ls /app;
 
-    # Copy the generated files to the host workspace directory
-    cp /workspace/package.json /output
-    cp /workspace/tsconfig.json /output
+%environment
+    # Container uses node_modules/.bin/tsc and we don't need to clutter host with it
+    export PATH="/app/node_modules/.bin:$PATH"
+
+%runscript
+    echo "Remove host output/* files and recreate folder"
+    rm -rf /host_project_root/output
+    mkdir -p /host_project_root/output
+
+    echo "Ensure container app/* files are copied to host output/ dir"
+    cp /app/* /host_project_root/output/
+
+    echo "Ensure host include/* files are copied to host output/ dir"
+    ls -la /host_project_root/include/
+    cp /host_project_root/include/.gitignore /host_project_root/output
+    cp /host_project_root/include/node_app.dev.def /host_project_root/output
+    cp /host_project_root/include/node_app.prod.def /host_project_root/output
+    cp /host_project_root/include/index.ts /host_project_root/output
     
-    echo "package.json and tsconfig.json have been copied to the host output directory."
+    echo "Modify package.json"
+    cd /host_project_root/output
+    jq '.scripts.build = "tsc --outDir=.dist"' package.json > package.tmp.json && mv package.tmp.json package.json
+    jq '.scripts.start = "node ./.dist/index.js"' package.json > package.tmp.json && mv package.tmp.json package.json
+    jq '.license |= if . == "ISC" then "" else . end' package.json > package.tmp.json && mv package.tmp.json package.json
+
+    echo "Modify the tsconfig.json"
+    tsc --showConfig --project tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json;
+
+    echo "Modify the new tsconfig.json using jq"
+    jq '.compilerOptions.target = "ES2022"' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json;
+    jq '.compilerOptions.outDir = "./dist"' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json;
+
+    echo "ls ${PWD}";
+    ls ${PWD};
 
 %labels
-    Author YourName
+    Author 1nf053c
     Version 1.0
-    Description "Container for generating Node.js project files without cluttering the host system."
+    Description "Container for generating default Node.js app files on a host system."
 
 %test
     # Test to ensure the container is working correctly
-    test -d /workspace && test -d /output
+    test -d /host_project_root #&& test -d /host_project_root/output
