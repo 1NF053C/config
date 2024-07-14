@@ -12,6 +12,7 @@ cd ${XDG_CONFIG_HOME} && {
     cp -r ./output/* ${HOME}/app
     cd ${HOME}/app
     echo ${PWD}
+    echo "cd ${HOME}/app to change to app root dir"
     echo "index.ts is app entry point."
     echo "Run ./build-dev.sh to build node_app.def.sif"
     echo "Run ./run-dev.sh to run node_app.def.sif"
