@@ -14,7 +14,7 @@ git clone https://github.com/1NF053C/config.git
 # Results:
 #
 # 1. The latest version of https://github.com/1NF053C/config.git will be used
-# to create your TypeScript Node.js app at ${HOME}/app with apptainer definitions
+# to create your TypeScript Node.js app at ${HOME}/app with apptainer build and run definitions
 #
 # 2. A latest copy of https://github.com/1NF053C/config.git repo is cloned at "${HOME}/.config/config"
 #
