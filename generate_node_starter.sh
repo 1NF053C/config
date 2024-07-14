@@ -1,4 +1,4 @@
-export XDG_CONFIG_HOME="~/.config"
+export XDG_CONFIG_HOME="${HOME}/.config"
 mkdir -p ${XDG_CONFIG_HOME}
 cd ${XDG_CONFIG_HOME} && {
     rm -rf ${XDG_CONFIG_HOME}/config
@@ -8,9 +8,9 @@ cd ${XDG_CONFIG_HOME} && {
     chmod +x ./run.sh
     ./build.sh
     ./run.sh
-    mkdir -p ~/app
-    cp -r ./output/* ~/app
-    cd ~/app
+    mkdir -p ${HOME}/app
+    cp -r ./output/* ${HOME}/app
+    cd ${HOME}/app
     echo ${PWD}
     echo "index.ts is app entry point."
     echo "Run ./build-dev.sh to build node_app.def.sif"
