@@ -15,7 +15,7 @@
     "strictPropertyInitialization": true,
     "alwaysStrict": true,
     "useUnknownInCatchVariables": true,
-    "outDir": "./dist"
+    "outDir": "./.dist"
   },
   "files": [
     "./index.ts"

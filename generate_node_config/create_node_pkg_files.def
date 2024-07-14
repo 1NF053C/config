@@ -41,14 +41,19 @@ From: node:18-alpine
     echo "Ensure host include/* files are copied to host output/ dir"
     ls -la /host_project_root/include/
     cp /host_project_root/include/.gitignore /host_project_root/output
-    cp /host_project_root/include/node_app.dev.def /host_project_root/output
-    cp /host_project_root/include/node_app.prod.def /host_project_root/output
+    cp /host_project_root/include/*.def /host_project_root/output
     cp /host_project_root/include/index.ts /host_project_root/output
     cp /host_project_root/include/README.md /host_project_root/output
+    cp /host_project_root/include/*-build.sh /host_project_root/output
+    chmod +x /host_project_root/output/*-build.sh
+
+    cp /host_project_root/include/*-run.sh /host_project_root/output
+    chmod +x /host_project_root/output/*-run.sh
 
     echo "Modify package.json"
     cd /host_project_root/output
-    jq '.scripts.build = "tsc --outDir=.dist"' package.json > package.tmp.json && mv package.tmp.json package.json
+    jq '.scripts.dev = "npm run build && npm run start"' package.json > package.tmp.json && mv package.tmp.json package.json
+    jq '.scripts.build = "tsc"' package.json > package.tmp.json && mv package.tmp.json package.json
     jq '.scripts.start = "node ./.dist/index.js"' package.json > package.tmp.json && mv package.tmp.json package.json
     jq '.license |= if . == "ISC" then "" else . end' package.json > package.tmp.json && mv package.tmp.json package.json
 
@@ -57,7 +62,7 @@ From: node:18-alpine
 
     echo "Modify the new tsconfig.json using jq"
     jq '.compilerOptions.target = "ES2022"' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json;
-    jq '.compilerOptions.outDir = "./dist"' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json;
+    jq '.compilerOptions.outDir = "./.dist"' tsconfig.json > tsconfig.tmp.json && mv tsconfig.tmp.json tsconfig.json;
 
     echo "ls ${PWD}";
     ls ${PWD};
