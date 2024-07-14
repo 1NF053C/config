@@ -60,10 +60,10 @@ From: node:18-alpine
     cp /host_project_root/include/*.def /host_project_root/output
     cp /host_project_root/include/index.ts /host_project_root/output
     cp /host_project_root/include/README.md /host_project_root/output
-    cp /host_project_root/include/*-build.sh /host_project_root/output
-    chmod +x /host_project_root/output/*-build.sh
-    cp /host_project_root/include/*-run.sh /host_project_root/output
-    chmod +x /host_project_root/output/*-run.sh
+    cp /host_project_root/include/build-*.sh /host_project_root/output
+    chmod +x /host_project_root/output/build-*.sh
+    cp /host_project_root/include/run-*.sh /host_project_root/output
+    chmod +x /host_project_root/output/run-*.sh
 
     echo "Modify package.json"
     cd /host_project_root/output
