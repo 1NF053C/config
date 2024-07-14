@@ -3,3 +3,5 @@ cache
 **/*.sif
 **/cache
 **/output
+'~'
+~
