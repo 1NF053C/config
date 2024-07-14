@@ -3,5 +3,6 @@ cache
 **/*.sif
 **/cache
 **/output
+generate_node_config/output/
 '~'
 ~
