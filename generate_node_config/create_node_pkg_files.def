@@ -3,6 +3,22 @@ From: node:18-alpine
 
 # generates default files in host's /output dir
 
+%environment
+    # Used for user-specific data files. Intended for important, persistent data that should be preserved.
+    export XDG_DATA_HOME="~/.local/share"
+    
+    # Used for non-essential, cached data. Can be deleted without loss of important information.
+    export XDG_CACHE_HOME="~/.cache"
+    
+    # Used for temporary runtime files and other file objects. Cleared on reboot, not intended for persistent data.
+    export XDG_RUNTIME_DIR="/run/user/$UID"
+
+    # Used for persistent state data. Includes things like logs, history, and application state.
+    export XDG_STATE_HOME="~/.local/state"
+
+    # Used for user-specific configuration files.
+    export XDG_CONFIG_HOME="~/.config"
+
 %post
     # Install system packages
     apk add --no-cache jq
