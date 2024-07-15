@@ -3,16 +3,17 @@ From: node:18-alpine
 
 %files
     ./environment.sh /environment.sh
-    ./compute.def /compute.def
-    ./build.sh /build.sh
-    ./run.sh /run.sh
+    ./buildapp.sh /buildapp.sh
     ./include/* /include/
 
 %appinstall compute
-    mv /build.sh ${XDG_CONFIG_HOME}/compute/
-    mv /run.sh ${XDG_CONFIG_HOME}/compute/
-    mv /environment.sh ${XDG_CONFIG_HOME}/compute/
-    cp /include/* ${XDG_CONFIG_HOME}/compute/include
+    SOURCE_ENV=". /environment.sh"
+    eval ${SOURCE_ENV}
+    echo ${SOURCE_ENV} >>${APPTAINER_ENVIRONMENT}
+    
+    cp /include/* ${XDG_CONFIG_HOME}/compute/include # this is dumb lol
+    cp /buildapp.sh ${XDG_CONFIG_HOME}/buildapp.sh
+
     . ${XDG_CONFIG_HOME}/buildapp.sh
 
 %apprun compute
