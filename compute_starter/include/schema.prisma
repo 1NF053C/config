@@ -9,7 +9,7 @@ datasource db {
   url      = "file:./compute.db"
 }
 
-model File {
+model FileMeta {
   id          Int      @id @default(autoincrement())
   name        String
   path        String
@@ -24,5 +24,5 @@ model File {
 model Tag {
   id    Int    @id @default(autoincrement())
   name  String @unique
-  files File[]
+  fileMetas FileMeta[]
 }
