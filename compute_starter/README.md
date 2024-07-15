@@ -1,6 +1,8 @@
 # compute starter
 
-this is pseudo code for now, wrote it without internet / testing it
+this is pseudo code for now, wrote it without internet / testing it.
+
+might be replaced with multi stage build defs
 
 ```
 ./build.sh
