@@ -16,6 +16,9 @@ From: node:18-alpine
     setcap cap_setuid+eip /usr/bin/newuidmap
     setcap cap_setgid+eip /usr/bin/newgidmap
 
+    echo "root:100000:65536" >> /etc/subuid
+    echo "root:100000:65536" >> /etc/subgid
+
 %appinstall app
     apk add --no-cache sqlite
     apk add --no-cache nodejs npm
