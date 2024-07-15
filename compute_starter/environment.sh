@@ -42,5 +42,6 @@ else
     echo "Not running inside an Apptainer/Singularity container"
 fi
 
+## todo fix for app
 mkdir -p ${XDG_CONFIG_HOME}/compute
 mkdir -p ${XDG_DATA_HOME}/compute
