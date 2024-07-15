@@ -16,7 +16,7 @@ From: node:18-alpine
     . ${XDG_CONFIG_HOME}/buildapp.sh
 
 %apprun compute
-    apptainer run --app app --containall ${XDG_DATA_HOME}/apptainer/app.sif
+    apptainer run --app app --containall ${XDG_DATA_HOME}/compute/app.sif
 
 %labels
     Author 1nf053c
