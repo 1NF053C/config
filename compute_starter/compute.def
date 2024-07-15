@@ -1,0 +1,21 @@
+Bootstrap: docker
+From: node:18-alpine
+
+%files
+    ./compute_environment.sh /compute_environment.sh
+    ./compute.def /compute.def
+    ./build.sh /build.sh
+    ./run.sh /run.sh
+
+%appinstall compute
+    mv /build.sh ${XDG_CONFIG_HOME}/compute/
+    mv /run.sh ${XDG_CONFIG_HOME}/compute/
+    . ${XDG_CONFIG_HOME}/build.sh
+
+%apprun compute
+    . ${XDG_CONFIG_HOME}/run.sh
+
+%labels
+    Author 1nf053c
+    Version 1.0
+    Description "Container for compute"

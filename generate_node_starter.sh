@@ -3,7 +3,7 @@ mkdir -p ${XDG_CONFIG_HOME}
 cd ${XDG_CONFIG_HOME} && {
     rm -rf ${XDG_CONFIG_HOME}/config
     git clone https://github.com/1NF053C/config.git
-    cd ./config/generate_node_config
+    cd ./config/node_typescript_starter
     chmod +x ./build.sh
     chmod +x ./run.sh
     ./build.sh
