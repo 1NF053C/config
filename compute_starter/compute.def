@@ -12,6 +12,7 @@ From: node:18-alpine
 
     cp /include/* ${XDG_CONFIG_HOME}/compute/include
 
+    sed -i '/community/d' /etc/apk/repositories
     apk update
     apk add apptainer
     apk add shadow-uidmap
@@ -20,6 +21,8 @@ From: node:18-alpine
     #echo "root:100000:65536" >> /etc/subuid
     #echo "root:100000:65536" >> /etc/subgid
     
+    cat /proc/sys/kernel/unprivileged_userns_clone
+
     apptainer build -F --fakeroot ${XDG_DATA_HOME}/compute/app.sif ${XDG_CONFIG_HOME}/compute/include/app.def
 
 %apprun compute

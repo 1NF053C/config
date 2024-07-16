@@ -4,21 +4,6 @@ From: node:18-alpine
 %files
     * /app
 
-%setup
-    # Ensure shadow and libcap are installed
-    apk add shadow libcap
-
-    # Set setuid root for newuidmap and newgidmap
-    chmod u+s /usr/bin/newuidmap
-    chmod u+s /usr/bin/newgidmap
-
-    # Set capabilities
-    setcap cap_setuid+eip /usr/bin/newuidmap
-    setcap cap_setgid+eip /usr/bin/newgidmap
-
-    echo "root:100000:65536" >> /etc/subuid
-    echo "root:100000:65536" >> /etc/subgid
-
 %appinstall app
     apk add --no-cache sqlite
     apk add --no-cache nodejs npm
