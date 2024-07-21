@@ -35,11 +35,9 @@ From: node:18-alpine
     git clone --no-checkout https://github.com/apptainer/apptainer.git .
     git checkout
 
-    ls $(pwd -P)/mlocal
-    ls $(pwd -P)/mlocal/scripts
-    cat $(pwd -P)/mlocal/scripts/check-min-go-version
-
-    ./mconfig --without-suid --prefix=$APPTAINER_DIR
+    # cat $(pwd -P)/mlocal/scripts/check-min-go-version # exists
+    ./mconfig --without-suid --prefix=$APPTAINER_DIR # errors, cannot find above script
+    
     make -C ./builddir
     make -C ./builddir install
     export PATH="$PATH:$APPTAINER_DIR/bin"
