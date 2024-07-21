@@ -12,16 +12,37 @@ From: node:18-alpine
 
     cp /include/* ${XDG_CONFIG_HOME}/compute/include
 
-    sed -i '/community/d' /etc/apk/repositories
     apk update
-    apk add apptainer
-    apk add shadow-uidmap
-    apk add libcap
+    apk add --no-cache \
+    build-base \
+    linux-headers \
+    libseccomp-dev \
+    glib-dev \
+    cryptsetup-dev \
+    squashfs-tools \
+    fakeroot \
+    git
 
-    #echo "root:100000:65536" >> /etc/subuid
-    #echo "root:100000:65536" >> /etc/subgid
-    
-    cat /proc/sys/kernel/unprivileged_userns_clone
+    wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz
+    tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
+    echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+    source /etc/profile
+
+    APPTAINER_DIR="$XDG_DATA_HOME/apptainer"
+    mkdir -p "$APPTAINER_DIR"
+    cd $APPTAINER_DIR
+
+    git clone --no-checkout https://github.com/apptainer/apptainer.git .
+    git checkout
+
+    ls $(pwd -P)/mlocal
+    ls $(pwd -P)/mlocal/scripts
+    cat $(pwd -P)/mlocal/scripts/check-min-go-version
+
+    ./mconfig --without-suid --prefix=$APPTAINER_DIR
+    make -C ./builddir
+    make -C ./builddir install
+    export PATH="$PATH:$APPTAINER_DIR/bin"
 
     apptainer build -F --fakeroot ${XDG_DATA_HOME}/compute/app.sif ${XDG_CONFIG_HOME}/compute/include/app.def
 
