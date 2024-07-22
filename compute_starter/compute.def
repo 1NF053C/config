@@ -6,7 +6,7 @@ From: node:18-alpine
     ./include/* /include/
 
 %appinstall compute
-    SOURCE_ENV=". /environment.sh"
+    SOURCE_ENV="source /environment.sh"
     eval ${SOURCE_ENV}
     echo ${SOURCE_ENV} >>${APPTAINER_ENVIRONMENT}
 
@@ -21,12 +21,16 @@ From: node:18-alpine
     cryptsetup-dev \
     squashfs-tools \
     fakeroot \
-    git
+    git \
+    bash
 
     wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz
     tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
-    echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
-    source /etc/profile
+
+    ADD_GO_TO_PATH_VAR="export PATH=$PATH:/usr/local/go/bin"
+    eval ${ADD_GO_TO_PATH_VAR}
+    echo ${ADD_GO_TO_PATH_VAR} >>${APPTAINER_ENVIRONMENT}
+    go version ## ERROR?
 
     APPTAINER_DIR="$XDG_DATA_HOME/apptainer"
     mkdir -p "$APPTAINER_DIR"
@@ -35,10 +39,8 @@ From: node:18-alpine
     git clone --no-checkout https://github.com/apptainer/apptainer.git .
     git checkout
 
-    # cat $(pwd -P)/mlocal/scripts/check-min-go-version # exists
-    ./mconfig --without-suid --prefix=$APPTAINER_DIR # errors, cannot find above script
-    
-    make -C ./builddir
+    ./mconfig -v -p $APPTAINER_DIR
+    make -C ./builddir all
     make -C ./builddir install
     export PATH="$PATH:$APPTAINER_DIR/bin"
 
