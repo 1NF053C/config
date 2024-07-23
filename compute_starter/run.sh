@@ -1,1 +1,1 @@
-apptainer run --app compute --containall ./compute.sif
+apptainer run --containall ./compute.sif

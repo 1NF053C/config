@@ -1,0 +1,53 @@
+Bootstrap: docker
+From: node:20-alpine
+
+%files
+    ${COMPUTE_INPUTDIR}/* /scif/apps/filemeta/src/
+
+%post
+    whoami
+    pwd
+    ls -l $(pwd)
+    echo $PATH
+    ls -l /scif/apps/filemeta/src/
+    cd /scif/apps/filemeta/src/
+
+    apk add --no-cache sqlite
+
+    npm install -g npm@latest
+    npm init -y
+    npm cache clean --force
+    rm -rf node_modules/ package-lock.json
+
+    npm i -D typescript
+    npm i -D ts-node
+    npm i -D @types/node
+    npm i -D @faker-js/faker
+    npm i -D @types/node
+    npm i -D tsx
+
+    npm i @prisma/client
+    npm i prisma
+    npm i ts-runtime-checks
+    npm i ts-patch
+    npx ts-patch install
+
+    #npx prisma init
+    
+    mv ./schema.prisma ./prisma/schema.prisma
+
+    rm -rf ./prisma/migrations
+    npx prisma migrate reset -f
+    npx prisma generate
+    npx prisma migrate dev --name init
+
+    tsc seedDb.ts
+
+%runscript
+    cd ${XDG_CONFIG_HOME}/app
+    node ./seedDb.js
+
+%labels
+    Author 1nf053c
+    Version 1.0
+    Description "Container for Node.js and sqlite"

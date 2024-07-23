@@ -1,16 +1,18 @@
 Bootstrap: docker
-From: node:18-alpine
+From: node:20-alpine
 
 %files
     ./environment.sh /environment.sh
-    ./include/* /include/
+    ./input/* /input/
 
-%appinstall compute
-    SOURCE_ENV="source /environment.sh"
-    eval ${SOURCE_ENV}
-    echo ${SOURCE_ENV} >>${APPTAINER_ENVIRONMENT}
+%post
+    source /environment.sh
+    cp /input/* ${COMPUTE_INPUTDIR}/
 
-    cp /include/* ${XDG_CONFIG_HOME}/compute/include
+    whoami
+    pwd
+    ls -l $(pwd)
+    echo $PATH
 
     apk update
     apk add --no-cache \
@@ -22,32 +24,16 @@ From: node:18-alpine
     squashfs-tools \
     fakeroot \
     git \
-    bash
+    bash \
+    go \
+    apptainer
 
-    wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz
-    tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
+    export APPTAINERENV_COMPUTE_INPUTDIR=${COMPUTE_INPUTDIR}
 
-    ADD_GO_TO_PATH_VAR="export PATH=$PATH:/usr/local/go/bin"
-    eval ${ADD_GO_TO_PATH_VAR}
-    echo ${ADD_GO_TO_PATH_VAR} >>${APPTAINER_ENVIRONMENT}
-    go version ## ERROR?
+    apptainer build -F ${COMPUTE_OUTPUTDIR}/filemeta.sif ${COMPUTE_INPUTDIR}/filemeta.def
 
-    APPTAINER_DIR="$XDG_DATA_HOME/apptainer"
-    mkdir -p "$APPTAINER_DIR"
-    cd $APPTAINER_DIR
-
-    git clone --no-checkout https://github.com/apptainer/apptainer.git .
-    git checkout
-
-    ./mconfig -v -p $APPTAINER_DIR
-    make -C ./builddir all
-    make -C ./builddir install
-    export PATH="$PATH:$APPTAINER_DIR/bin"
-
-    apptainer build -F --fakeroot ${XDG_DATA_HOME}/compute/app.sif ${XDG_CONFIG_HOME}/compute/include/app.def
-
-%apprun compute
-    apptainer run --app app --containall ${XDG_DATA_HOME}/compute/app.sif
+%runscript
+    apptainer run --containall ${COMPUTE_OUTPUTDIR}/filemeta.sif
 
 %labels
     Author 1nf053c

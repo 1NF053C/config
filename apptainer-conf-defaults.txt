@@ -1,0 +1,7 @@
+# apptainer.conf settings
+# set these in your apptainer.conf file on host, might be found in `/etc/apptainer/apptainer.conf`
+
+# stick with --containall flag and explict dir binds
+mount home = no
+
+#bind path = /etc/hosts # disable until we need container to access localhost
