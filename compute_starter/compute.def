@@ -2,17 +2,20 @@ Bootstrap: docker
 From: node:20-alpine
 
 %files
-    ./environment.sh /environment.sh
-    ./input/* /input/
+    ./input/{*,.gitignore} /input/
 
 %post
-    source /environment.sh
-    cp /input/* ${COMPUTE_INPUTDIR}/
+    export APPTAINER_TMPDIR="/scif/tmp"
+    mkdir -p "${APPTAINER_TMPDIR}"
+    mkdir -p /scif/apps/compute/data/input/
+    mkdir -p /scif/apps/compute/data/output/
+
+    cp /input/* /scif/apps/compute/data/input/
+    cp /input/.gitignore /scif/apps/compute/data/input/
 
     whoami
     pwd
-    ls -l $(pwd)
-    echo $PATH
+    ls -l /scif/apps/compute
 
     apk update
     apk add --no-cache \
@@ -28,12 +31,10 @@ From: node:20-alpine
     go \
     apptainer
 
-    export APPTAINERENV_COMPUTE_INPUTDIR=${COMPUTE_INPUTDIR}
-
-    apptainer build -F ${COMPUTE_OUTPUTDIR}/filemeta.sif ${COMPUTE_INPUTDIR}/filemeta.def
+    apptainer build -F /scif/apps/compute/data/output/app.sif /scif/apps/compute/data/input/app.def
 
 %runscript
-    apptainer run --containall ${COMPUTE_OUTPUTDIR}/filemeta.sif
+    apptainer run --fakeroot --writable-tmpfs /scif/apps/compute/data/output/app.sif
 
 %labels
     Author 1nf053c

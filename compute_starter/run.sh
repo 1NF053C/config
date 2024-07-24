@@ -1,1 +1,1 @@
-apptainer run --containall ./compute.sif
+apptainer run --containall --fakeroot ./compute.sif

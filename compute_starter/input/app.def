@@ -2,15 +2,13 @@ Bootstrap: docker
 From: node:20-alpine
 
 %files
-    ${COMPUTE_INPUTDIR}/* /scif/apps/filemeta/src/
+    /scif/apps/compute/data/input/{*,.gitignore} /scif/apps/filemeta/src/
 
 %post
     whoami
-    pwd
-    ls -l $(pwd)
-    echo $PATH
-    ls -l /scif/apps/filemeta/src/
     cd /scif/apps/filemeta/src/
+    ls -l ./
+    pwd
 
     apk add --no-cache sqlite
 
@@ -18,34 +16,24 @@ From: node:20-alpine
     npm init -y
     npm cache clean --force
     rm -rf node_modules/ package-lock.json
-
-    npm i -D typescript
-    npm i -D ts-node
-    npm i -D @types/node
-    npm i -D @faker-js/faker
-    npm i -D @types/node
-    npm i -D tsx
-
-    npm i @prisma/client
-    npm i prisma
-    npm i ts-runtime-checks
-    npm i ts-patch
+    npm i -D typescript ts-node @faker-js/faker @types/node prisma
+    npm i @prisma/client ts-runtime-checks ts-patch
     npx ts-patch install
 
-    #npx prisma init
-    
+    mkdir -p ./prisma
     mv ./schema.prisma ./prisma/schema.prisma
-
     rm -rf ./prisma/migrations
     npx prisma migrate reset -f
     npx prisma generate
     npx prisma migrate dev --name init
 
-    tsc seedDb.ts
-
 %runscript
-    cd ${XDG_CONFIG_HOME}/app
-    node ./seedDb.js
+    ls -l /scif/apps/filemeta/src
+    cd /scif/apps/filemeta/src
+    mv .gitignore ..
+    cd /scif/apps/filemeta
+    echo "filemeta dir:"
+    echo "/scif/apps/filemeta"
 
 %labels
     Author 1nf053c
